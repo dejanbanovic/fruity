@@ -206,21 +206,20 @@ export class AppService {
 
   // Orders
   async listOrders(query: ListOrdersDTO): Promise<OrderDTO[]> {
-    const fruitFilterCount = query.fruitId.length;
-    const customerFilterCount = query.customerId.length;
     let whereCondition = '';
-    if (fruitFilterCount > 0 && customerFilterCount === 0) {
-      whereCondition = `WHERE fruit_id IN (${query.fruitId.join()})`;
+    if (query.fruitIds.length > 0 && query.customerIds.length === 0) {
+      whereCondition = `WHERE fruit_id IN (${query.fruitIds})`;
     }
-    if (fruitFilterCount === 0 && customerFilterCount > 0) {
-      whereCondition = `WHERE customer_id IN (${query.customerId.join()})`;
+    if (query.fruitIds.length === 0 && query.customerIds.length > 0) {
+      whereCondition = `WHERE customer_id IN (${query.customerIds})`;
     }
-    if (fruitFilterCount > 0 && customerFilterCount > 0) {
-      whereCondition = `WHERE fruit_id IN (${query.fruitId.join()}) AND customer_id IN (${query.customerId.join()})`;
+    if (query.fruitIds.length > 0 && query.customerIds.length > 0) {
+      whereCondition = `WHERE fruit_id IN (${query.fruitIds}) AND customer_id IN (${query.customerIds})`;
     }
+    console.log(whereCondition);
     const connection = await this.getConnection();
     const result = await connection.query(
-      `SELECT id, customer_id, fruit_id, quantity FROM order_item ${whereCondition} LIMIT $1 OFFSET $2`,
+      `SELECT id, customer_id, fruit_id, quantity FROM order_item ${whereCondition} ORDER BY id ASC LIMIT $1 OFFSET $2`,
       [query.take, query.skip],
     );
     await connection.release();
@@ -297,6 +296,17 @@ export class AppService {
       throw new NotFoundException(`Order with id = ${id} does not exist`);
     }
 
+    // Check if there is enough stock
+    const stock = await connection.query(
+      'SELECT stock FROM fruit WHERE id = $1',
+      [existingOrder.rows[0].fruit_id],
+    );
+    if (stock.rows[0].stock < order.quantity - existingOrder.rows[0].quantity) {
+      throw new BadRequestException(
+        `Fruit with id = ${existingOrder.rows[0].fruit_id} does not have enough stock. Current stock is: ${stock.rows[0].stock}`,
+      );
+    }
+
     // Try to write order
     try {
       await connection.query('BEGIN');
@@ -304,7 +314,7 @@ export class AppService {
         'UPDATE fruit SET stock = stock - $1 WHERE id = $2',
         [
           order.quantity - existingOrder.rows[0].quantity,
-          existingOrder.rows[0].fruitId,
+          existingOrder.rows[0].fruit_id,
         ],
       );
       const result = await connection.query(
