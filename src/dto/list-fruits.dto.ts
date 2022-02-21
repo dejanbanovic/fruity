@@ -4,7 +4,7 @@ export class ListFruitsDTO {
     this.take = 100;
     this.name = '';
     this.stockGreaterThen = 0;
-    this.stockSmallerThen = 9999999999999;
+    this.stockSmallerThen = 2147483647;
   }
   skip: number;
   take: number;
