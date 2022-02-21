@@ -44,7 +44,7 @@ export class AppService {
   async listCustomers(query: ListCustomersDTO): Promise<CustomerDTO[]> {
     const connection = await this.getConnection();
     const result = await connection.query(
-      'SELECT id, name, location FROM customer WHERE location LIKE $1 AND name LIKE $2 LIMIT $3 OFFSET $4',
+      'SELECT id, name, location FROM customer WHERE LOWER(location) LIKE $1 AND LOWER(name) LIKE $2 ORDER BY id ASC LIMIT $3 OFFSET $4',
       [`%${query.location}%`, `%${query.name}%`, query.take, query.skip],
     );
     await connection.release();
@@ -131,7 +131,7 @@ export class AppService {
   async listFruits(query: ListFruitsDTO): Promise<FruitDTO[]> {
     const connection = await this.getConnection();
     const result = await connection.query(
-      'SELECT id, name, stock FROM fruit WHERE name LIKE $1 AND stock < $2 AND stock > $3 LIMIT $2 OFFSET $3',
+      'SELECT id, name, stock FROM fruit WHERE name LIKE $1 AND stock < $2 AND stock > $3 ORDER BY id ASC LIMIT $4 OFFSET $5',
       [
         `%${query.name}%`,
         query.stockSmallerThen,
