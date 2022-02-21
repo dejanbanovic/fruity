@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -24,89 +25,149 @@ import { UpdateOrderDTO } from './dto/update-order.dto';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly service: AppService) {}
 
   @Get('customer/:id')
-  getCustomer(@Param('id') id: number): CustomerDTO {
-    return new CustomerDTO();
+  async getCustomer(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CustomerDTO> {
+    try {
+      return await this.service.getCustomer(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('customer')
-  listCustomers(@Query() query: ListCustomersDTO): CustomerDTO[] {
-    return [new CustomerDTO()];
+  async listCustomers(
+    @Query() query: ListCustomersDTO,
+  ): Promise<CustomerDTO[]> {
+    try {
+      return await this.service.listCustomers(query);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('customer')
-  createCustomer(@Body() customer: CreateCustomerDTO): CustomerDTO {
-    return new CustomerDTO();
+  async createCustomer(
+    @Body() customer: CreateCustomerDTO,
+  ): Promise<CustomerDTO> {
+    try {
+      return await this.service.createCustomer(customer);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Put('customer/:id')
-  updateCustomer(
-    @Param('id') id: number,
+  async updateCustomer(
+    @Param('id', ParseIntPipe) id: number,
     @Body() customer: UpdateCustomerDTO,
-  ): CustomerDTO {
-    return new CustomerDTO();
+  ): Promise<CustomerDTO> {
+    try {
+      return await this.service.updateCustomer(id, customer);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete('customer/:id')
-  deleteCustomer(@Param('id') id: number): void {
-    return;
+  async deleteCustomer(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      await this.service.deleteCustomer(id);
+      return;
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('fruit/:id')
-  getFruit(@Param('id') id: number): FruitDTO {
-    return new FruitDTO();
+  async getFruit(@Param('id', ParseIntPipe) id: number): Promise<FruitDTO> {
+    try {
+      return await this.service.getFruit(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('fruit')
-  listFruits(@Query() query: ListFruitsDTO): FruitDTO[] {
-    return [new FruitDTO()];
+  async listFruits(@Query() query: ListFruitsDTO): Promise<FruitDTO[]> {
+    try {
+      return await this.service.listFruits(query);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('fruit')
-  createFruit(@Body() fruit: CreateFruitDTO): FruitDTO {
-    return new FruitDTO();
+  async createFruit(@Body() fruit: CreateFruitDTO): Promise<FruitDTO> {
+    try {
+      return await this.service.createFruit(fruit);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Put('fruit/:id')
-  updateFruit(
-    @Param('id') id: number,
+  async updateFruit(
+    @Param('id', ParseIntPipe) id: number,
     @Body() fruit: UpdateFruitDTO,
-  ): FruitDTO {
-    return new FruitDTO();
+  ): Promise<FruitDTO> {
+    try {
+      return await this.service.updateFruit(id, fruit);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete('fruit/:id')
-  deleteFruit(@Param('id') id: number): void {
-    return;
-  }
-
-  @Get('order/:id')
-  getOrder(@Param('id') id: number): OrderDTO {
-    return new OrderDTO();
+  async deleteFruit(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      await this.service.deleteFruit(id);
+      return;
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('order')
-  listOrder(@Query() query: ListOrdersDTO): OrderDTO[] {
-    return [new OrderDTO()];
+  async listOrder(@Query() query: ListOrdersDTO): Promise<OrderDTO[]> {
+    try {
+      return await this.service.listOrders(query);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Post('order')
-  createOrder(@Body() order: CreateOrderDTO): OrderDTO {
-    return new OrderDTO();
+  async createOrder(@Body() order: CreateOrderDTO): Promise<OrderDTO> {
+    try {
+      return await this.service.createOrder(order);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Put('order/:id')
-  updateOrder(
+  async updateOrder(
     @Param('id') id: number,
     @Body() order: UpdateOrderDTO,
-  ): OrderDTO {
-    return new OrderDTO();
+  ): Promise<OrderDTO> {
+    try {
+      return await this.service.updateOrder(id, order);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Delete('order/:id')
-  deleteOrder(@Param('id') id: number): void {
-    return;
+  async deleteOrder(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      await this.service.deleteOrder(id);
+      return;
+    } catch (error) {
+      throw error;
+    }
   }
 }
